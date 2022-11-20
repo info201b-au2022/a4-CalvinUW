@@ -26,7 +26,49 @@ test_query2 <- function(num=6) {
 # Your functions and variables might go here ... <todo: update comment>
 #----------------------------------------------------------------------------#
 
+summary_data <- incarceration %>%
+  filter(year == 2018) %>%
+  mutate(black_jail_prop = (black_jail_pop / total_jail_pop) * 100) %>%
+  mutate(black_jail_prop = round(black_jail_prop, 2)) %>% 
+  mutate(black_jail_prop = replace_na(black_jail_prop, 0)) %>% 
+  select(state, county_name, black_jail_prop)
 
+summary_list <- list()
+
+summary_list$errors <- summary_data %>% 
+  filter(black_jail_prop > 100) %>% 
+  nrow()
+
+max_black_jail_prop <- summary_data %>%
+  filter(black_jail_prop <= 100) %>% 
+  filter(black_jail_prop == max(black_jail_prop, na.rm = TRUE))
+
+summary_list$max_location <- max_black_jail_prop %>% 
+  mutate(location = paste0(county_name, ", ", state)) %>% 
+  pull(location)
+
+
+summary_list$max_value <- max_black_jail_prop %>% 
+  pull(black_jail_prop) %>% 
+  unique()
+
+summary_list$max_value_count <- max_black_jail_prop %>% 
+  nrow()
+
+summary_list$min_value <- summary_data %>% 
+  filter(black_jail_prop == min(black_jail_prop, na.rm = TRUE)) %>% 
+  pull(black_jail_prop) %>% 
+  unique()
+
+summary_list$min_value_count <- summary_data %>% 
+  filter(black_jail_prop == min(black_jail_prop, na.rm = TRUE)) %>% 
+  nrow()
+
+summary_list$average <- summary_data %>% 
+  filter(black_jail_prop <= 100) %>%
+  summarize(avg_blk_jail_prop = mean(black_jail_prop, na.rm = TRUE)) %>%
+  mutate(avg_blk_jail_prop = round(avg_blk_jail_prop, 2)) %>% 
+  pull()
 
 ## Section 3  ---- 
 #----------------------------------------------------------------------------#
@@ -62,9 +104,9 @@ plot_jail_pop_for_us <- function()  {
 #----------------------------------------------------------------------------#
 
 get_jail_pop_by_states <- function(states) {
-  jail_data <- incarceration %>% 
-    filter(state %in% states) %>% 
-    group_by(year, state) %>% 
+  jail_data <- incarceration %>%
+    filter(state %in% states) %>%
+    group_by(year, state) %>%
     summarize(total = sum(total_jail_pop, na.rm = TRUE))
   return(jail_data)
 }
@@ -84,11 +126,12 @@ plot_jail_pop_by_states <- function(states) {
     labs(
       title = "Increase of U.S. State Jail Populations (1970-2018)",
       x = "Year",
-      y = "State Jail Population"
+      y = "State Jail Population",
+      color = "State"
     )
-
   return(plot)
 }
+
 
 ## Section 5  ---- 
 #----------------------------------------------------------------------------#
@@ -97,35 +140,29 @@ plot_jail_pop_by_states <- function(states) {
 # See Canvas
 #----------------------------------------------------------------------------#
 
-section5_fun <- function(year_choice) {
+get_blk_jail_data <- function(year_choice) {
   data <- incarceration %>% 
-    #filter(state ==state_choice) %>% 
     filter(year == year_choice) %>% 
     group_by(county_name) %>% 
-    mutate(pop_prop_blk = black_pop_15to64 / total_pop_15to64) %>% 
-    mutate(black_jail_prop = black_jail_pop / total_jail_pop)
+    mutate(pop_prop_black = (black_pop_15to64 / total_pop_15to64) * 100) %>% 
+    mutate(black_jail_prop = (black_jail_pop / total_jail_pop) * 100) %>% 
+    filter(black_jail_prop <= 100)
+  return(data)
 }
 
-section5_plot <- function(state_choice, year_choice) {
-  plot_data <- section5_fun(state_choice, year_choice)
-  
-  ggplot(data = plot_data,
-         mapping = aes(
-           x = black_prison_pop,
-           y = pop_prop_blk)
-         ) + geom_point()
+get_blk_jail_scatter <- function(year_choice) {
+  plot <- ggplot(get_blk_jail_data(year_choice),
+    mapping = aes(x = pop_prop_black, y = black_jail_prop)
+  ) +
+    geom_point() +
+    geom_smooth() +
+    labs(
+      title = "Black Population Percent vs. Black Jail Percent",
+      x = "Percent of Population That is Black",
+      y = "Percent of Jail Population that is Black"
+    )
+  return(plot)
 }
-
-plot_data <- section5_fun(2018)
-
-test_plot <- ggplot(data = plot_data) +
-       geom_point(mapping = aes(
-         x = pop_prop_blk,
-         y = black_jail_prop)) + 
-  scale_y_continuous(limits = c(0,1))
-
-
-test_plot
 
 ## Section 6  ---- 
 #----------------------------------------------------------------------------#
@@ -134,36 +171,48 @@ test_plot
 # See Canvas
 #----------------------------------------------------------------------------#
 
-section6_data <- function() {
+get_black_jail_prop_data <- function() {
   plot_data <- incarceration %>% 
-    filter(year == 2018) %>% 
-    mutate(black_jail_prop = black_jail_pop / total_jail_pop) %>% 
+    filter(year == 2018) %>%
+    mutate(black_jail_prop = (black_jail_pop / total_jail_pop) * 100) %>% 
+    filter(black_jail_prop <= 100) %>% 
     mutate(subregion = tolower(word(county_name))) %>% 
-    select(subregion, black_jail_prop)
+    select(subregion, black_jail_prop) %>% 
+    left_join(map_data("county"), by = "subregion") %>% 
+    group_by(region) %>% 
+    summarize(mean_blk = mean(black_jail_prop)) %>% 
+    left_join(map_data("state"), by = "region")
   return(plot_data)
 }
 
-section6_plot <- function() {
-  data = section6_data() +
-    
+plot_black_jail_map <- function() {
+  ggplot(get_black_jail_prop_data()) +
+    geom_polygon(
+      mapping = aes(x = long, y = lat, group = group, fill = mean_blk),
+      color = "white",
+      size = .1
+    ) +
+    coord_map() +
+    scale_fill_continuous(low = "#132B43", high = "Red") +
+    labs(
+      title = "Average Percent of State Jail Population That is Black",
+      fill = "Average Black Percent"
+    ) +
+    theme_bw() +
+    theme(
+      axis.line = element_blank(),
+      axis.text = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title = element_blank(),
+      plot.background = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border = element_blank()
+    )
 }
 
-test_data <- section6_data()
+plot_black_jail_map()
 
-test_map_data <- map_data("county")
-
-test_both <- left_join(test_data, test_map_data, by = "subregion")
-
-
-test <- ggplot(map_data("county")) +
-  geom_polygon(
-    mapping = aes(x = long, y = lat, group = group),
-    color = black_jail_prop,
-    linewidth = .1
-  ) +
-  coord_map()
-
-test
 ## Load data frame ---- 
 
 
