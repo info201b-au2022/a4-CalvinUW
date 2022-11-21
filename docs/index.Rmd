@@ -1,7 +1,7 @@
 ---
-title: "Your A4 Report Title (TODO: Revise title)"
+title: "Growth and Black Representation in U.S. Jail Populations"
 author: "Calvin Standaert"
-date: '2022-11-16'
+date: '2022-11-20'
 output: bookdown::html_document2
 ---
 
@@ -10,59 +10,76 @@ source("../source/analysis.R")
 ```
 
 ## Abstract {-}
-[TODO: Include a short abstract (about 50 words)]
+The historic and ongoing patterns of unequal policing and incarceration is a key issue many black Americans face. By examining the percentage of county jail populations that are black, I demonstrate that the representation of black Americans in U.S. county jail populations follows geographic patterns and may be related to the percentage of a county’s population that is black.
 
 ## Introduction {-}
-[TODO]
+The dataset used in this report is drawn from the Vera Institute and tracks the values and figures related to incarceration and populations as broken down by time and ethnicity. The dataset is hugely important for the issue of racial criminal justice disparities and encapsulates the values that display patterns of racial disparities. Due to the importance of the dataset for advancing racial equality, research conducted on the dataset is a sensitive and delicate process.
+
+Research conducted into this dataset impacts both direct and indirect stakeholders. The direct stakeholders of this dataset include journalists, racial activists, those who study racial inequalities, and government officials who can all use this dataset to reveal patterns of inequality and inequitable criminal justice outcomes. The indirect stakeholders of this dataset are vast and include policymakers who can use analysis of the dataset to inform political decisions, people of color who can be benefited or be harmed by analysis of the dataset, those who consume news generated from analysis of this dataset, and more.
+
+Due to the sensitive nature of the dataset and the wide-reaching impacts that such analysis can have, working with this dataset needs to engage the values of justice, fairness, and community.
+The values of fairness and justice in particular should be considered when working with this dataset due to the historical patterns of racial inequity in criminal justice and the potential benefits or hams on justice and fairness that analysis on this dataset can produce. In a similar vein, we should also keep community in mind when working with this dataset as research with this dataset will likely affect our communities, and by keeping our communities in mind we are more able to promote positive results on them with our research. 
+
+Within this report, I answer four major questions. The first question I answer in this report is “How has the total jail population in the United States changed throughout the years 1970 to 2018”. The next question I answer in this report is “How has the total jail population for the states of California, Oregon, and Washington changed throughout the years 1970 to 2018”. The third question I answer in this report is “How is the percentage of black in a county’s population aged 15 to 65 related to the percentage of black in that same county’s jail population”. Finally, the last question I answer in this report is “How does the average percent black of state jailed populations vary geographically?”.
 
 ## Data Summary {-}
 
-The main value I was interested in investigating throughout this report is the percentage of a given United States county jail population that is black. I think that this is an important variable to track throughout the country because it enables us to understand whether black people are overrepresented in the jail population of an area. Given the historic over-policing of black populations in the United States, by tracking this variable through geography, time, and in relation to other variables, I believe we can gain insight into some of the inequalities faced by black populations in America.
+The main variable I was interested in investigating throughout this report is ***what percent of a county’s jail population is black**, as reported for the year 2018. This variable is important in tracking patterns of inequality, as it can reveal the counties where black people are overrepresented in jail populations and also to what degree those populations are overrepresented.
 
-One value of insight in regards to the percentage of a given United States county jail population that is black, is the minimum percentage found over all US counties. Through my analysis, I discovered that the minimum percentage of total jail population that is black is `r summary_list$min_value`%. Whatsmore, I found that there are `r summary_list$min_value_count` counties reporting this value. The minimum is an important characteristic of this variable because it allows us to see which counties have the lowest percentage of black prisoners, and thus likely where we are not going to find unequal incarceration of black populations.
+One key value in exploring the percentage of county jail populations that are black is what the minimum or lowest percent black a county’s jail population is across all U.S. counties. Through my analysis, I discovered that the lowest percent black of any county’s jail population is **`r summary_list$min_value`%**. Furthermore, I found that there are **`r summary_list$min_value_count`** total counties with this lowest percentage. The minimum is an important characteristic in tracking the patterns of inequality related to this variable because it allows us to see which counties have the lowest proportions of black prisoners, and thus likely where we are not going to find disproportionate incarceration of black populations.
 
-Next, another value of importance is the maximum percentage of the total jail population that is black is `r summary_list$max_value`%. This value is very important because I believe it can show us where black individuals are being incarcerated at the highest rate, and thus where we may find other patterns of inequality. From my analysis, the highest percentage of county jail populations that are black is `r summary_list$max_value_count`. The two counties are, `r summary_list$max_location[1]`, and `r summary_list$max_location[2]`, share this value,
+Next, another value of importance is what the highest percent black a county’s jail population is, across all U.S. counties. From my calculations, I found that the highest percent of any U.S. county’s jailed population that is black is **`r summary_list$max_value`%**. In total there are two counties with this percentage, **`r summary_list$max_location[1]`**, and **`r summary_list$max_location[2]`**. Similar to the minimum or lowest value, the highest percentage is an important value as it can show us which counties have black individuals being most represented/overrepresented in a jailed population. 
 
-A third important value is the average percentage of United States county jail populations that is black. The average value is probably the most important quantity here as it allows us to understand the general trend in county jail black populations throughout America. From my analysis, the average percentage of United States county jail populations that is black is `r summary_list$average`%.
+A third important value is the average percent of U.S. county jail populations that is black. The average is hugely important in tracking patterns of racial inequality as it allows us to understand the general trend of black representation in county jail populations for the entire country. From my analysis, I found that the average percent of U.S. county jail populations that is black is **`r summary_list$average`%**.
 
-Finally, a last value I think is important here is the number of counties where either the total jail population or black jail population was reported or recorded erroneously. In my analysis, I found that there are `r summary_list$errors` number of counties where the percentage of that county’s jailed black population exceeded 100% of the total jailed population. This is important because it gives us a good of the quality of the dataset as a whole as well as enables us to get a good idea about the possibility of misreporting in this dataset.
+Finally, the last value I think is important here is the number of counties where either the total jail population or black jail population was reported or recorded erroneously. In my analysis, I found that there are **`r summary_list$errors`** counties where the percentage of that county’s jailed black population exceeded 100% of the total jailed population. I tracked these values as errors because the total jail population should always be equal to or greater than any one ethnic jail population. I think that it is important to track the clear errors in this dataset because it enables us to understand the quality of the data and also the likelihood of misreporting in the data.
+
+Besides what percentage of a county jail population is black, I also conducted an analysis of the increase in the U.S. total jailed population from 1970 to 2018 and the increase in the total jailed population in several individual states from 1970 to 2018.
 
 ## Growth of the U.S. Prison Population {-}
-```{r echo=FALSE, fig.cap= "A bar chart showing the growth of the U.S. prison population for the years 1970-2018.", fig.align='center'}
+```{r echo=FALSE, fig.cap= "A bar chart showing the growth of the U.S. prison population for the years 1970-2018.", fig.align='center', fig.width=13, fig.height=5}
 section3_chart <- plot_jail_pop_for_us()
 section3_chart
 ```
 
-The graph shows a clear increase in the number of individuals held in U.S. jails throughout the years of 1970-2018. The number of jailed individuals seems to start increasing around 1979 and continues to increase thereafter until around 2008, when it peaks at nearly 800,000 individuals and begins to fall. Overall, the total jail population seems to have increased from about 175,000 individuals in 1970 to about 750,000 individuals in 2018.
-
+_The graph shows a clear increase in the number of individuals held in U.S. jails throughout the years 1970 to 2018_. The number of jailed individuals seems to start increasing around 1979 and continued to increase thereafter until around 2008 when it peaks at nearly 800,000 individuals and begins to fall. Overall, the total jail population in the U.S. seems to have nearly quadrupled over the span of time.
 
 ## Growth of Prison Population by State {-}
 
-```{r echo=FALSE, warning=FALSE, message=FALSE, fig.cap= "A chart showing the growth of the jail population in the U.S. States of California, Oregon, and Washington for the years 1970-2018.", fig.align='center'}
-section4_chart <- plot_jail_pop_by_states(c("WA", "CA", "OR"))
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.cap= "The chart shows the growth of the jail population in the U.S. States of California, Texas, Florida, and New York from 1970-2018.", fig.align='center'}
+section4_chart <- plot_jail_pop_by_states(c("CA", "TX", "FL", "NY"))
 section4_chart
 ```
-From the chart, we can see that the population of jailed individuals in the states of California, Oregon, and Washington has all increased throughout the years of 1970 to 2018. The increasing trend in Washington begins around 1983 and continues to increase until about 2007 when the population begins to decline slightly. The increase in jailed population in Oregon begins around 1983 and modestly rises until about 2000, when the population begins to decline. Overall the jailed population in Washington seems to have increased from about 3,000 individuals to about 13,000 individuals during the time span, while the jailed population in Oregon seems to have increased from about 2,000 individuals to about 6,000 individuals during the timespan. 
+The chart shows the growth of the jail population in the U.S. States of California, Texas, Florida, and New York from 1970-2018.
 
-The increase in the total jailed population in California is fairly dramatic and begins to start increasing in about 1976 and continues to sharply increase until about 1990 when the rate of increase becomes erratic yet still rising. Overall the jailed population in California seems to have increased from about 17,000 individuals to about 86,000 individuals throughout the time period.
+From the graph, we can see that _the state jail populations of California, Texas, Florida, and New York all increased during the time period of 1970 to 2018_. The four states California, Florida, Texas, and New York were chosen for representation in this graph as they are the four most populous states, and should thus display the trend of jail population increase for the four states where the most people live.
 
-The three states of California, Oregon, and Washington were chosen for comparison as they are adjacent geographically, yet differ in population size and demographics. The difference in size and demographics helps to display different rates of increase in jailed populations and which can be further explored for justification.
+The pattern of increase in the jail population of California in the graph is fairly dramatic, beginning to sharply increase around 1976 and continuing to sharply increase until about 1990 when the rate of increase became more erratic. Overall, during the time period, the California state jail population increased from around 29,000 inmates in 1970 to about 75,000 inmates in 2018.
 
-## Percentage of Black Jail Population and Black Population {-}
+In Florida, the increasing trend in state jail population began around 1977 and continued to increase until around 2008 when it peaked and began to fall. Throughout the time period, the Florida state jail population increased from around 10,000 inmates in 1970 to around 55,000 inmates in 2018.
+
+In New York, the state jail population started in a decreasing pattern in 1970 and continued to fall until about 1977 when the population began to rise moderately. The state jail population continued to increase in New York until about 1999 when it plateaued and began to fall. Altogether, the state jail population of New York increased from about 18,000 inmates in 1970 to about 25,000 inmates in 2018.
+
+Finally, in Texas, the state jail population started to increase in about 1977 and began to dramatically increase until around 1995, when it fell sharply. After falling sharply, the jail population began to rise again before beginning to level out at around 70,000 inmates in 2006. Over the time period, the Texas state jail population rose from about 10,000 inmates in 1970 to about 71,000 inmates in 2018.
+
+## Black Representation in County Jail and Non-inmate Populations {-}
 ```{r echo=FALSE, warning=FALSE, message=FALSE, fig.cap= "A scatterplot comparing the percent of a county jail population that is black, and the percent of a county population that is black.", fig.align='center'}
-section5_chart <- get_blk_jail_scatter(2018)
+section5_chart <- get_black_jail_scatter(2018)
 section5_chart
 ```
-The question I sought to answer was “How is the proportion of the total population aged 15 to 65 that is black related to the proportion of the total jail population of that same county that is black”. 
+The question I sought to answer was **“How is the percentage of a county’s population aged 15 to 65 that is black related to the percentage of that same county’s jail population that is black?”**.
 
-What we can see in the chart is that generally, the more the population of a county is black, the more that the proportion of jailed people in that county is black. That being said, we can also see that the proportion of jailed black people is often much higher than the proportion of a county that is actually black. In very many counties, the 
-This tells us that there are very many counties where black people are disproportionally incarcerated.
+From my analysis, I determined that generally, _counties with populations that are more black tend to have jail populations that are more black_. That being said, the percentage of a county’s population that is black does not rise equivalently with the percentage of the county’s jail population that is black, and often a county’s jail population is much more black than its corresponding non-inmate population. Notably, the pattern is fairly variable and there are quite a few outlying data points with values outside of the general pattern.
 
-## Geographic Distribution of Black Inmates {-}
-```{r echo=FALSE, warning=FALSE, fig.cap= "A map showing the contiguous United States, with each state colored from dark blue to bright red depending on the average proportion of that state’s county jail populations that are black.", fig.align='center'}
-section6_chart <- plot_black_jail_map()
+Altogether, I think that what see in much of the graph is an overrepresentation of black individuals in county jail populations given each county’s percent black in non-inmate populations.
+
+
+## Geographic Distribution of Black Jail Representation {-}
+```{r echo=FALSE, warning=FALSE, fig.cap= "A map showing the contiguous United States, with each state colored from dark blue to bright red depending on the average proportion of that state’s county jail populations that are black.", fig.align='center', fig.width=8}
+section6_chart <- map_black_jail_prop()
 section6_chart
 ```
-The question I sought to answer in this portion of my report is “How does the average proportion of a state’s jail population that is black change geographically”.
+The question I sought to answer in this portion of my report is **“How does the average percentage of state jailed populations that are black vary geographically?”**.
 
-From the above map, we can clearly see some geographic variation in the proportion of county jail populations that are black. Generally, we see that the highest average proportion of jail populations that are black are in the eastern United States, specifically focused around the Southeastern states.
+From my analysis, I determined that there is notable variation in the average percentage of state jailed populations that are black. Specifically, the map shows that the _east coast states appear to have the highest percentage black jailed populations_ while the _mountain-west states have the lowest percentage black jail populations_. The state with the jail populations that are on average most black is Connecticut, where the jail populations are on average over 40% black. In opposite, the state with the jail populations that are on average least black is Arizona, where jail populations are on average less than 10% percent black.
+
